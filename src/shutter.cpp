@@ -4,7 +4,7 @@
 // Ben Slaghekke, 1 Aug 2023
 //
 
-#define _DEBUG 0
+#define _DEBUG 1
 #include "debug.h"
 
 #include "ESP32Servo.h"
@@ -39,7 +39,7 @@ Shutter     shutter;
 //-------------------
 void Shutter::setup ()
 {
-    DEBUG ("Shutter setup\n");
+    LOG ("Shutter setup\n");
     attach (SHUTTER_GPIO);
     localRestoreSettings ();
     currentPosition = endPosition;
@@ -66,7 +66,7 @@ void Shutter::loop ()
             if (nMoves == 0) saveSettings (false); // only nmoves and endposition
             moveIntervalTime = millis ();  // start timer
             if (nMoves == 0) {
-              DEBUG ("Move complete; shutter is %s\n", state2str (state));
+              LOG ("Move complete; shutter is %s\n", state2str (state));
             }
          }
          else {
@@ -106,7 +106,7 @@ void Shutter::startRepeatedMoves (int _nMoves)
 void Shutter::open ()
 // open the shutter
 {
-    DEBUG ("Open shutter\n");
+    LOG ("Open shutter\n");
     moveTo (openPosition);
 }
 
@@ -114,7 +114,7 @@ void Shutter::open ()
 void Shutter::close () 
 // close the shutter
 {
-    DEBUG ("Close shutter \n");
+    LOG ("Close shutter \n");
     moveTo (closedPosition);
 }
 
@@ -151,7 +151,7 @@ void Shutter::saveSettings (bool saveAll)
 // they are restored in the init code
 {
 #ifdef STORE_SETTINGS 
-   DEBUG ("Shutter::saveSettings ");
+   LOG ("Shutter::saveSettings ");
    preferences.begin ("Servo",     false); // name, read-only
    preferences.putUInt ("EndPos",       endPosition);
    preferences.putUInt ("ShutterMoves", getNShutterMoves());
@@ -162,7 +162,7 @@ void Shutter::saveSettings (bool saveAll)
       preferences.putUInt ("Speed",     getSpeed ());
    }
    preferences.end ();
-   DEBUG ("done\n");
+   LOG ("done\n");
 #endif
 }
 
@@ -171,12 +171,12 @@ void Shutter::restoreSettings ()
 // restores settings and moves the shutter 
 // to the saved position
 {
-   DEBUG ("Restore settings ");
+   LOG ("Restore settings ");
    localRestoreSettings ();
    if (currentPosition != endPosition) {
       moveTo (endPosition);
    }
-   DEBUG ("done \n");
+   LOG ("done \n");
 }
 
 
@@ -231,7 +231,7 @@ Shutter::State Shutter::setState ()
   else if (currentPosition == openPosition)   state = Open;
   else if (currentPosition == closedPosition) state = Closed;
   else                                        state = Idle;
-  DEBUG ("setState: cp = %d, ep = %d, clp = %d, op = %d, state = %s\n",
+  LOG ("setState: cp = %d, ep = %d, clp = %d, op = %d, state = %s\n",
           currentPosition, endPosition, closedPosition, openPosition, state2str (state));
   return state; 
 }
@@ -245,7 +245,7 @@ void Shutter::moveTo (uint32_t destination)
       moveDirection = (endPosition >= currentPosition)?1:-1;
       moveSpeed = absMoveSpeed * moveDirection;
 	    nShutterMoves++;
-      DEBUG ("Nbr of shutter moves = %d\n", nShutterMoves);
+      LOG ("Nbr of shutter moves = %d\n", nShutterMoves);
    }
 }
 

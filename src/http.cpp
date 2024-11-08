@@ -16,7 +16,7 @@
 #include "httpsupp.h"
 #include "http.h"
 
-#define _DEBUG 0
+#define _DEBUG 1
 #include "debug.h"
 
 #define PART_BOUNDARY "123456789000000000000987654321"
@@ -34,11 +34,11 @@ httpd_handle_t stream_httpd = NULL;
 esp_err_t index_handler (httpd_req_t *req)
 {  esp_err_t result;
    if (shutter.isClosed ()) {
-      DEBUG ("Index handler: shutter closed; show normal index page\n");
+      LOG ("Index handler: shutter closed; show normal index page\n");
       result = sendPage (req, indexBody, 0);
    }
    else {
-      DEBUG ("Index handler: shutter not closed; show warning index page\n");
+      LOG ("Index handler: shutter not closed; show warning index page\n");
       result = sendPage (req, shutterOpenBody, 0);
    }
    return result;
@@ -106,7 +106,7 @@ static esp_err_t stream_handler (httpd_req_t *req)
          break;
       }
       if (++frameNo % 100 == 0) {
-         DEBUG ("JPG: frame %d length %u bytes\n", frameNo, (uint32_t)(_jpg_buf_len));
+         LOG ("JPG: frame %d length %u bytes\n", frameNo, (uint32_t)(_jpg_buf_len));
       }
    }
 
@@ -119,11 +119,11 @@ static esp_err_t siteInfo2Handler (httpd_req_t *req)
 {
    bool doReset = false;
    bool success = true;;
-   DEBUG ("cmd_handler called\n");
+   LOG ("siteInfo2Handler: cmd_handler called\n");
    esp_err_t result;
    String kvps;   // key-value pairs
    result = fetchQuery (req, kvps);
-   DEBUG ("After fetch Query, result = %d, kvps = %s\n", result, kvps.c_str());
+   LOG ("siteInfo2Handler: After fetch Query, result = %d, kvps = %s\n", result, kvps.c_str());
 
    if (result == ESP_OK) {
       String eV;

@@ -6,7 +6,6 @@
 #ifndef _MYWIFI_H
 #define _MYWIFI_H
 
-#include <DNSServer.h>
 #include <WiFi.h>
 
 

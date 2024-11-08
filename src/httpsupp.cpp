@@ -6,10 +6,9 @@
 
 #include <Arduino.h>
 
-
-#include "XString.h"
 #include "html.h"
 #include <Preferences.h>
+#include "urlencode.h"
 
 #include "httpsupp.h"
 #define _DEBUG 1
@@ -19,12 +18,12 @@ extern Preferences preferences;
 
 esp_err_t sendPage (httpd_req_t *req, const char *body, unsigned int refreshSeconds)
 {
-   DEBUG ("sendPage: refreshSeconds = %d\n", refreshSeconds);
+   LOG ("sendPage: refreshSeconds = %d\n", refreshSeconds);
     String refreshS;
     if (refreshSeconds > 0) {
        refreshS += String ("<meta http-equiv=\"refresh\" content=\"") + String (refreshSeconds) + String ("\">");
     }
-    DEBUG ("refresh clause = %s\n", refreshS.c_str ());
+    LOG ("refresh clause = %s\n", refreshS.c_str ());
 
     String head (theHead);
     head.replace ("$REFRESH$", refreshS);  
@@ -47,7 +46,6 @@ esp_err_t sendPage (httpd_req_t *req, const char *body, unsigned int refreshSeco
 esp_err_t fetchQuery (httpd_req_t *req, String &query)
 // fetch the query string that the client used to access this server
 {
-//   String S;
    char   *buf = nullptr;
    size_t  bufLen;
    int result = ESP_OK;
@@ -69,12 +67,13 @@ esp_err_t fetchQuery (httpd_req_t *req, String &query)
    if (result == ESP_OK) {
       // we have a buffer
       result =  httpd_req_get_url_query_str (req, buf, bufLen);
-      DEBUG ("fetchQuery: after get_url_query_str buf = >%s<, len = %d, result = %d\n", buf, bufLen, result);
+      LOG ("fetchQuery: after get_url_query_str buf = >%s<, len = %d, result = %d\n", buf, bufLen, result);
       if (result != ESP_OK) {  
          httpd_resp_send_404 (req);  // not found
       }       
       else {
-         query = XString (buf).URLdecode();
+         query = buf;
+         URLencode::decode (query);
       }
    }
 
@@ -156,7 +155,7 @@ String getSiteName ()
 //--------------------------
 void setComment (String s)
 {
-   DEBUG ("setComment: set to '%s'\n", s.c_str ());
+   LOG ("setComment: set to '%s'\n", s.c_str ());
    preferences.begin ("Comment", false);
    preferences.putString ("Name", s);
    preferences.end ();
@@ -168,7 +167,7 @@ String getComment ()
    preferences.begin ("Comment", true); // name, read-only
    String s (preferences.getString ("Name", ""));
    preferences.end ();
-   DEBUG ("getComment: comment = '%s'\n", s.c_str ());
+   LOG ("getComment: comment = '%s'\n", s.c_str ());
    return s;
 }
 

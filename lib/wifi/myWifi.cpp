@@ -7,7 +7,6 @@
 #include <Preferences.h>
 #include <DNSServer.h>
 #include "myWifi.h"
-#include "XString.h"
 
 #define MAX_CONNECTIONS 2
 
@@ -63,15 +62,29 @@ String MyWifi::makeSSID ()
    return SSID;
 }
 
+String ip2str(const IPAddress ip)
+{
+   String result;
+   uint32_t ipu = ip;
+   for (int i = 0; i < 4; i++)
+   {
+      result += (int(ipu & 0xFF));
+      ipu = ipu >> 8;
+      if (i < 3)
+         result += '.';
+   }
+   return result;
+}
+
 bool MyWifi::setupAsAccessPoint ()
 {
    WiFi.mode (WIFI_AP);
    WiFi.softAP (makeSSID ().c_str ());
 // WiFi.softAP (makeSSID ().c_str (), password,MAX_CONNECTIONS);
-   DEBUG ("Wait 100 ms for AP_START...\n");
+
    delay (100);
   
-   DEBUG ("Set softAPConfig\n");
+   LOG ("Set softAPConfig\n");
    IPAddress Ip (192,168,1,1);
    IPAddress NMask (255, 255, 255, 0);
 // IPAddress gateway (192,168,1,254);
@@ -79,13 +92,13 @@ bool MyWifi::setupAsAccessPoint ()
 // IPAddress secundaryDNS (8,8,4,4);
    WiFi.softAPConfig (Ip, Ip, NMask);
    IPAddress myIP = WiFi.softAPIP();
-   DEBUG ("Accesspoint IP address = %s\n", XString (myIP).c_str ());
+   LOG ("Accesspoint IP address = %s\n", ip2str (myIP).c_str ());
    return true;
 }
 
 bool MyWifi::setupAsClient (int nTries)
 {
-   DEBUG ("Setup as client; %d tries", nTries);
+   LOG ("Setup as client; %d tries", nTries);
    // connect to Wi-Fi 
    bool connected = false;
    int waitCount = 0;
@@ -93,13 +106,13 @@ bool MyWifi::setupAsClient (int nTries)
    String password  = myPassword ();
    if (ssid.length () > 0 && password.length () > 0) {
       for (int i = 0; i < nTries; i++) {
-         DEBUG ("\nTry %d as client, network %s  ", i+1, ssid.c_str ());
+         LOG ("\nTry %d as client, network %s  ", i+1, ssid.c_str ());
          WiFi.begin (ssid, password);  // from credentials.h
          while (!connected && waitCount++ < 10) {
             connected = (WiFi.status() == WL_CONNECTED);
             if (!connected ) {
                delay (500);
-               DEBUG (".");
+               LOG (".");
             }
          }
          if (connected) {
@@ -116,20 +129,19 @@ bool MyWifi::setupAsClient (int nTries)
 
 void MyWifi::setup ()
 {
-   DEBUG ("myWifi setup\n");
+   LOG ("myWifi setup\n");
    bool connected = false;
    // connect to Wi-Fi net
    while (!connected) { 
       connected = setupAsClient (6);
       if (connected) {
-         XString x;
-         DEBUG ("\nWiFi connected. IP address = %s\n", XString (WiFi.localIP ()).c_str ());
+         LOG ("\nWiFi connected. IP address = %s\n", ip2str (WiFi.localIP ()).c_str ());
       }
       else {
          connected = setupAsAccessPoint ();
       }
    }
    if (!connected) {
-      DEBUG ("\nWifi NOT connected!\n");
+      LOG ("\nWifi NOT connected!\n");
    }
 }
