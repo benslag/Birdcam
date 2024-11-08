@@ -1,7 +1,7 @@
 //
 // html.cpp - all html code for bird cam
 //
-// Ben Slaghekke, 23 sep 2023 
+// Ben Slaghekke, 23 sep 2023
 // 07 05 2024 BSla add extra user note line
 #include "html.h"
 
@@ -19,9 +19,8 @@
 // $KEY$ sequences are replaced by their values.
 //
 
-
 const char PROGMEM styleHead[] =
-R"rawliteral(
+    R"rawliteral(
 <style>
    body    { font-family: Arial; text-align: center; margin:0px auto; padding-top: 30px;}
    table   { margin-left: auto; margin-right: auto; }
@@ -39,8 +38,6 @@ R"rawliteral(
    a     {font-size:200%;font-family:verdana;}
 </style>
 )rawliteral";
-
-
 
 const char PROGMEM theHead[] = R"rawliteral(
 <html>
@@ -64,7 +61,8 @@ const char PROGMEM indexBody[] = R"rawliteral(
 )rawliteral";
 
 const char PROGMEM shutterOpenBody[] = R"rawliteral(
-   <h2>Sluiter stond open</h2>   <p> Bij het vorige bezoek is de sluiter niet gesloten. Hierdoor vervuilt de cameralens. </p>
+   <h2>Sluiter stond open</h2>
+   <p> Bij het vorige bezoek is de sluiter niet gesloten. Hierdoor vervuilt de cameralens. </p>
    <h2> Vergeet alstublieft niet, na gebruik de sluiter te sluiten! </h2>
    <a href="page2"> Bekijk camerabeeld </a><br><br><br><br>
    <a href="siteinfo"> Stel site info in </a><br>
@@ -75,7 +73,6 @@ const char PROGMEM page3Body[] = R"rawliteral(
    <a href="page2"> Terug naar het camerabeeld </a><br><br><br>
    <a href="siteinfo"> Stel site info in </a><br>
 )rawliteral";
-
 
 const char PROGMEM siteInfoBody[] = R"rawliteral(
 <form action="/siteinfo2" action=GET>
@@ -115,7 +112,7 @@ const char PROGMEM rebootBody[] = R"rawliteral(
 // The script changes this URI into text   http://1.2.3.4:81/stream
 // So the (0,-6) refers to the length of the page name excluding the /page2/
 // Beware if you change the page name!
-// 
+//
 const char PROGMEM page2Body[] = R"rawliteral(
     <img src="" id="photo" >
     <br>

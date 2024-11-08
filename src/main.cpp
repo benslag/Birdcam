@@ -5,15 +5,14 @@
 //  ======
 //  Rui Santos
 //  Complete instructions at https://RandomNerdTutorials.com/esp32-cam-projects-ebook/
-//  
+//
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files.
 //  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 //  =====
 // Ben Slaghekke, 28 aug 2023 - split up into several modules
 // Ben Slaghekke,  8 nov 2024 - moved to VSCode
 
-
-#include "soc/soc.h"             // disable brownout problems
+#include "soc/soc.h" // disable brownout problems
 #include "soc/rtc_cntl_reg.h"
 
 #include "camera.h"
@@ -23,44 +22,45 @@
 #include "timer.h"
 #include "credentials.h"
 
-#define  _DEBUG 1
+#define _DEBUG 1
 #include "debug.h"
 
 static uint32_t startTime;
 static uint32_t previousTime;
-static void loopTime ();
+static void loopTime();
 
-
-static void myDebugPrinter ( const char *buffer)
+static void myDebugPrinter(const char *buffer)
 {
-   Serial.print (buffer);
+   Serial.print(buffer);
 }
 
-
-
 //--------------------
-void setup() 
+void setup()
 {
-   Serial.begin (115200);
-   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
-   DEBUGAddPrintFunction (myDebugPrinter);
-   shutter.setup ();
-   camera. setup ();
-   myWifi. setup ();
-   httpSetup ();
+   Serial.begin(115200);
 
-   startTime = millis ();
-   previousTime = micros ();
+   Serial.print("Serial.begin done\n");
+   DEBUGAddPrintFunction(myDebugPrinter);
 
+   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); // disable brownout detector
 
-   LOG ("setup done\n");
+   LOG("This is main.setup\n");
+
+   shutter.setup();
+   camera.setup();
+   myWifi.setup();
+   httpSetup();
+
+   startTime = millis();
+   previousTime = micros();
+   LOG("setup done\n");
 }
 
 //-----------
-void loop() 
+void loop()
 {
-   loopTime ();
-   shutter.loop ();
+   loopTime();
+   shutter.loop();
 }
 
 static void loopTime()
@@ -88,7 +88,7 @@ static void loopTime()
 
       float usPerLoop = float(expired) * 1000 / loopCount;
       LOG("main loop: uptime = %d minutes; avg loop time = %5.1f us, max loop time = %d us\n",
-            uptime, usPerLoop, maximumTime);
+          uptime, usPerLoop, maximumTime);
       loopCount = 0;
       maximumTime = 0;
       uptime++;
